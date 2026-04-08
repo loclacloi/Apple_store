@@ -32,6 +32,7 @@ services:
   # 3. Backend
   app-server:
     build: ./server
+    image: apple_store_server
     container_name: apple_store_server
     restart: always
     ports:
@@ -49,12 +50,16 @@ services:
 
   # 🔥 4. SEED DATA (QUAN TRỌNG)
   mongo-seed:
-    build: ./server
+    image: apple_store_server
     container_name: apple_store_seed
     depends_on:
       - mongodb
+      - app-server
     command: sh -c "sleep 10 && npm run seed"
     restart: "no"
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/apple-store
+      JWT_SECRET: 1234567890llll@
     networks:
       - apple_store_net
 
@@ -82,7 +87,7 @@ services:
     container_name: apple_store_admin
     restart: always
     ports:
-      - "4000:80"
+      - "4001:80"
     depends_on:
       - app-server
     networks:
